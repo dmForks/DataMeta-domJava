@@ -1,0 +1,170 @@
+(*
+DataMeta DOM source definition - very obsolete now, do not use till further notice.
+
+Version 1.3.0
+
+2013-Feb-13
+
+See this article about EBNF:
+http://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_Form
+*)
+
+(* Syntax of the DataMeta DOM source file. See below for details *)
+datametadom-syntax = {syntax-top-level};
+
+(* Define metacharacters *)
+cr-symbol = ? ISO 6429 character Carriage Return ?; 
+lf-symbol = ? ISO 6429 character Line Feed ?; 
+dos-eol = cr-symbol, lf-symbol;
+unix-eol = lf-symbol;
+eol = dos-eol | unix-eol;
+
+(* Exclude EOL from space-symbol class *)
+space = ? any whitespace character ? - eol;
+visual-symbol = ? any visible character ?;
+any-char = space-symbol | visual-symbol;
+
+spaces = space, {space}
+
+(* define metaclass instead of listing those, alphabetical symbols: *)
+upcase-alpha-symbol = ? any of the 26 letters of English alphabet A to Z uppercase ?;
+locase-alpha-symbol = ? any of the 26 letters of English alphabet A to Z lowercase ?;
+
+decimal-digit-symbol = ? any of the 10 decimal digits 0 through 9 ?;
+integer = {decimal-digit-symbol};
+
+(* Alphabetical letter, any case *)
+alpha-letter = upcase-alpha-symbol | locase-alpha-symbol
+
+word-char = '_' | alpha-letter | decimal-digit-symbol;
+
+class-name = upcase-alpha-symbol
+comment-line = '#', any-char, eol;
+comments = {comment-line}
+
+(* anything on the line *)
+freeform-line = { any-char }, eol;
+
+empty-line = eol;
+
+(* any count of empty lines *)
+vertical-space = {eol};
+
+doc-text = { freeform-line };
+
+end-keyword = [spaces], 'end', eol;
+
+(* 
+The Doc definition applies to the next documentable element which is either
+an entity (the Record, Enum or Mapping) or a Record's Field.
+*)
+doc-def = [spaces], 'doc', [spaces], ( 'plain' | 'java' ), eol, doc-text, end-keyword;
+docs = {doc-def};
+
+version-def = [spaces], 'ver', [spaces], {visual-symbol}, eol;
+
+variable-name = locase-alpha-symbol, { word-char };
+
+(* DataMeta DOM namespace format *)
+namespace-name = {variable-name, '.'}, variable-name;
+
+namespace-def = [spaces], 'namespace', [spaces], namespace-name, eol;
+
+class-name = upcase-alpha-symbol, {word-char};
+
+(* Required and optional indicators for fields *)
+required-field-symbol = '+';
+optional-field-symbol = '-';
+nullability = [ required-field-symbol | optional-field-symbol ]
+
+(* Dimension definition symbols: start, end and scale separator, in the format [dim.scale] 
+for the types with scale (currently numeric only), or [dim] for single-dimensioned types like
+    int or string *)
+dim-start-symbol = '[';
+dim-end-symbol = ']';
+scale-separator-symbol = '.';
+(* Single dimension with no scale *)
+dim-def = dim-start-symbol, integer, dim-end-symbol;
+(* 
+The second integer normally would be required to be lesser than the first one.
+EBNF is not providing means to impose restrictions like this in the EBNF syntax.
+*)
+scale-def = dim-start-symbol, integer, scale-separator-symbol, integer, dim-end-symbol; 
+
+(* Data Types *)
+int-type = 'int', dim-start-symbol, ( 1 | 2 | 4 | 8 ), dim-end-symbol;
+string-type = 'string', dim-def;
+char-type = 'char', dim-def;
+float-type = 'float', dim-start-symbol, ( 4 | 8 ), dim-end-symbol;
+bool-type = 'bool'
+datetime-type = 'datetime'
+numeric-type = 'numeric', scale-def
+raw-data-type = 'raw', dim-def
+
+full-class-name = class-name | ( namespace-name, '.', class-name )
+any-data-type = int-type | string-type | char-type | float-type | bool-type | datetime-type | numeric-type | raw-data-type | full-class-name;
+
+file-name = {word-char}
+
+(*
+Include file. File name should be supplied without .dmDom extension which is 
+added automatically, there should be no path specified.
+The files are looked for in:
+1. The directory where the master source file is located, the one that started
+   the current parsing session.
+2. Anywhere in the path pointed to by the environment variable DATAMETA_LIB
+*)
+include-def = 'include', [spaces], file-name, eol;
+
+enum-word = {word-char};
+enum-separator = ',' | space | eol;
+enum-list = enum-word, {enum-separator, enum-word};
+
+enum-def = [docs], 'enum', [spaces], class-name, eol, [version-def], enum-list, eol, end-keyword;
+
+
+(*
+DataMeta DOM mappings are defined in the syntax of a Ruby hash which is described in the Ruby documentation:
+
+http://www.ruby-doc.org/core-1.9.3/Hash.html
+
+Without opening and closing curlies.
+
+This is done to save the implementation time and effort.
+*)
+ruby-hash-def = ? Ruby Hash definition without curlies ?;
+
+(* first data-type is type "from" and the second one is type "to", or the mapping target type *)
+map-def = [docs], 'map', [spaces], class-name, [spaces], data-type, [spaces], data-type, eol, [version-def], ruby-hash-def, eol, end-keyword;
+
+(* the source datatype for a bitset is always int[4] *)
+bitset-def = [docs], 'map', [spaces], class-name, [spaces], data-type, eol, [version-def], ruby-hash-def, eol, end-keyword;
+
+(*
+DataMeta DOM default definitions start with the equals sign and end with EOL,
+anything between the two that is convertible to the target type.
+*)
+default-def = [spaces], '=', {any-char}, eol
+
+field-def = [docs], [spaces], nullability, any-data-type, [spaces], variable-name, [ default-def | eol ]
+
+(*
+Record Attribute word.
+*)
+attr-word = {word-char};
+variable-list = variable-name,  {[spaces], ',', [spaces], variable-name}
+
+hints = '(', variable-list, ')'
+
+unique-def = [spaces], 'unique', [spaces], [hints, [spaces] ], variable-list, eol;
+index-def = [spaces], 'index', [spaces], [hints, [spaces] ], variable-list, eol;
+identity-def = [spaces], 'identity', [spaces], [hints, [spaces] ], variable-list, eol;
+
+rec-attrb = unique-def | index-def | identity-def;
+
+rec-attrb-list = {rec-attrb}
+
+record-def = [docs], 'record', [spaces], class-name, eol, [comments], [version-def], { comments | field-def}, rec-attrb-list, end-keyword;
+
+syntax-top-level = comments | namespace-def | vertical-space | version-def | record-def | map-def | enum-def | bitset-def;
+
