@@ -1,5 +1,7 @@
 # DataMeta DOM Core
 
+For documentation, please refer to the [DataMeta Docs Repository](https://github.com/eBayDataMeta/DataMeta).
+
 ## This is the DataMeta DOM base project; 
 
 The **Java** part does not have any dependencies on target platforms, only the base for Java using DataMeta DOM generated POJOs.
