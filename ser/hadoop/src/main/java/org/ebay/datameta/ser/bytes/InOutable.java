@@ -11,8 +11,7 @@ import static org.apache.hadoop.io.Text.writeString;
 import static org.apache.hadoop.io.Text.readString;
 
 /**
- * Version of Writable that takes a value for each call. Creating a Writable for each object written is
- * a waste and it's unnecessary. Setting a value for each call is not thread-safe.
+ * Common ancestor for serializers to/from {@link DataOutput}/{@link DataInput}.
  *
  * @author Michael Bergens
  */
@@ -23,6 +22,9 @@ public abstract class InOutable<T extends DataMetaEntity> {
 
     abstract public void write(DataOutput out, T val) throws IOException;
 
+  /**
+   * Write a semantic version - semantic parts only to save space.
+   */
     public static void writeVersion(DataOutput out, final SemanticVersion version) throws IOException {
         writeString(out, version.getSemanticPartsOnly());
     }
