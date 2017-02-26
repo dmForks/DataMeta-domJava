@@ -22,13 +22,23 @@ public class CannedRegexUtil {
      * Idea <a href="http://www.regextester.com/17">borrowed from here</a>, improved to support any country code.
      */
     private final static Pattern PHONE = Pattern.compile("^(?:(?:\\+?\\d+\\s*(?:[.-]\\s*)?)?(?:\\(\\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\\s*\\)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\\s*(?:[.-]\\s*)?)?([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\\s*(?:[.-]\\s*)?([0-9]{4})(?:\\s*(?:#|x\\.?|ext\\.?|extension)\\s*(\\d+))?$");
+
+    /**
+     *
+     */
+    private final static Pattern UUID = Pattern.compile("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}");
+
     private final static String EMAIL_KEY = "email";
     private final static String PHONE_KEY = "phone";
+    private final static String UUID_KEY_LOWER = "uuid";
+    private final static String UUID_KEY_UPPER = "UUID";
 
     private static final Map<String, Pattern> RX = Collections.unmodifiableMap(
         Stream.of(
             new AbstractMap.SimpleEntry<>(EMAIL_KEY, EMAIL),
-            new AbstractMap.SimpleEntry<>(PHONE_KEY, PHONE)
+            new AbstractMap.SimpleEntry<>(PHONE_KEY, PHONE),
+            new AbstractMap.SimpleEntry<>(UUID_KEY_LOWER, UUID),
+            new AbstractMap.SimpleEntry<>(UUID_KEY_UPPER, UUID)
         ).collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue))
     );
 
