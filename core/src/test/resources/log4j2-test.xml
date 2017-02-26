@@ -15,7 +15,7 @@
 
         <appender type="File" name="File" fileName="${filename}">
             <layout type="PatternLayout">
-                <pattern>%d{HH:mm:ss.SSS} %contextName:%marker %p [%thread] &lt;%r&gt; |%file#%L| %m%n</pattern>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS EEE} %contextName:%marker %p [%thread] &lt;%r&gt; |%file#%L| %m%n</pattern>
             </layout>
         </appender>
 
