@@ -4,7 +4,7 @@
 
     <groupId>com.github.ebaydatameta</groupId>
     <artifactId>ser-bytes</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
     <name>DataMeta DOM - DataMeta/Hadoop</name>
     <description>Metadata for any byte serializing goal, including Hadoop and/or various NoSQL platforms</description>
@@ -37,7 +37,7 @@
         <dependency>
             <groupId>com.github.ebaydatameta</groupId>
             <artifactId>dom-core</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
