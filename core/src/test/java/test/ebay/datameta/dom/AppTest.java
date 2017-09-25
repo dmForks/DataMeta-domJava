@@ -1,13 +1,17 @@
 package test.ebay.datameta.dom;
 
 import org.ebay.datameta.dom.BitSet;
+import org.ebay.datameta.dom.CannedRegexUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Formatter;
+import java.util.regex.Pattern;
 
+import static org.ebay.datameta.dom.CannedRegexUtil.EMAIL_KEY;
+import static org.ebay.datameta.dom.CannedRegexUtil.getCannedRegEx;
 import static org.ebay.datameta.dom.DataMetaSame.EQ;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -48,4 +52,19 @@ public class AppTest {
         assertFalse(EQ.isSame(one, different));
     }
 
+    @Test public void testEmailRegex() {
+      final String[] emails = new String[]{
+        "johndoe@gmail.com",
+        "johndoe123@gmail.com",
+        "johnDoe123@gmail.com",
+        "Johndoe123@gmail.com",
+        "JohnDoe@gmail.com"
+      };
+
+      final Pattern emailPattern = getCannedRegEx(EMAIL_KEY);
+      for (final String email : emails) {
+        L.info("Testing email \"{}\"", email);
+        assertTrue("Email check failed for \"" + email + '\"', emailPattern.matcher(email).matches());
+      }
+    }
 }
