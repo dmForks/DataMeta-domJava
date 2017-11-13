@@ -36,11 +36,20 @@ public class JacksonUtil {
 
   private final static JacksonUtil INSTANCE = new JacksonUtil();
 
+  public static JacksonUtil getInstance() {return INSTANCE;}
+
   private final static DateTimeUtil DTU = DateTimeUtil.getInstance();
 
-  public final static String VER_KEY = "=ver=";
+  /**
+   * The JSON key for the version of the record, namely {@link DataMetaEntity#getVersion()}.
+   */
+  public final static String VER_KEY = "*v*";
 
-  public static JacksonUtil getInstance() {return INSTANCE;}
+  /**
+   * They JSON key for the datatype, i.e. the <tt>record</tt> full name including the namespace, i.e.
+   * the full Java/Scala class specification for the data type.
+   */
+  public final static String DT_KEY = "*dt*";
 
   private JacksonUtil() {}
 
@@ -50,6 +59,7 @@ public class JacksonUtil {
     final JsonGenerator generator = jf.createGenerator(w);
     generator.writeStartObject();
     generator.writeStringField(VER_KEY, v.getVersion().toString());
+    generator.writeStringField(DT_KEY, v.getClass().getName());
     out.write(generator, v);
     generator.close();
     return w.toString();
