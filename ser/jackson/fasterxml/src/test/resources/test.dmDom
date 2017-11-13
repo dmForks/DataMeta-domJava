@@ -1,0 +1,31 @@
+# Testing DataMeta model
+
+namespace test.ebay.datameta.ser.jackson.fasterxml.gen
+
+ver 3.2.14
+
+record DmTesting
+  +int[4] intVal = 0
+  +int[8] longVal
+  -string[30] name
+  +string email matches email
+  +datetime created
+  +numeric[18.2] salary
+  -Colors color
+  +TestingDm embedded
+  -list{TestingDm} embs
+  identity intVal, longVal
+end
+
+enum Colors
+   Red, White, Blue
+end
+
+record TestingDm
+  +string id
+  +Colors color
+  -set{int[8]} longs
+  -list{datetime} whens
+  identity id
+end
+
