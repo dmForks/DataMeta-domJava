@@ -1,8 +1,6 @@
 package test.ebay.datameta.ser.jackson.fasterxml;
 
 import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import org.apache.logging.log4j.core.util.JsonUtils;
 import org.ebay.datameta.ser.jackson.fasterxml.JacksonUtil;
 import org.ebay.datameta.ser.jackson.fasterxml.VerAndDataType;
 import org.junit.After;
@@ -18,7 +16,6 @@ import test.ebay.datameta.ser.jackson.fasterxml.gen.v3_2_14.TestingDm;
 import test.ebay.datameta.ser.jackson.fasterxml.gen.v3_2_14.TestingDm_DmSameFull;
 import test.ebay.datameta.ser.jackson.fasterxml.gen.v3_2_14.TestingDm_JSONable;
 
-import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.time.Month;
 import java.time.ZoneId;
@@ -28,6 +25,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static java.time.ZoneOffset.UTC;
+import static org.ebay.datameta.dom.DateTimeUtil.CLOCK;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -52,7 +51,8 @@ public class TestJacksonUtil {
     tdm1.setLongs(longs);
     List<ZonedDateTime> zdtms1 = new ArrayList<>();
     zdtms1.add(ZonedDateTime.of(1993, Month.FEBRUARY.getValue(), 28, 23, 58, 45, 0, ZoneId.systemDefault()));
-    zdtms1.add(ZonedDateTime.of(1995, Month.MAY.getValue(), 15, 20, 40, 35, 0, ZoneId.of("America/Phoenix")));
+    zdtms1.add(ZonedDateTime.of(1995, Month.MAY.getValue(), 15, 20, 40, 35, 0, UTC));
+    zdtms1.add(ZonedDateTime.now(CLOCK)); // One way to get the "now" in UTC
     tdm1.setWhens(zdtms1);
     String json = JU.writeObject(jf, TestingDm_JSONable.getInstance(), tdm1);
 /*    jg.writeStartObject();
@@ -78,6 +78,7 @@ public class TestJacksonUtil {
     zdtms1.add(ZonedDateTime.of(2001, Month.AUGUST.getValue(), 18, 13, 38, 15, 0, ZoneId.of("America/Chicago")));
     zdtms1.add(ZonedDateTime.of(2003, Month.SEPTEMBER.getValue(), 25,17, 39, 35, 0, ZoneId.of("America/Indiana/Indianapolis")));
     zdtms1.add(ZonedDateTime.of(2015, Month.JULY.getValue(), 4, 18, 43, 35, 0, ZoneId.of("America/New_York")));
+    zdtms1.add(ZonedDateTime.now(UTC)); // Another way to get the "now" in UTC
     tdm2.setWhens(zdtms1);
 
     List<TestingDm> embs = new ArrayList<>(); embs.add(tdm1); embs.add(tdm2);
