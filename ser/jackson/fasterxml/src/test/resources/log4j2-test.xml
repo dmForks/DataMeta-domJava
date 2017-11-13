@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="INFO" strict="true" name="jdkUtilTest">
+    <properties>
+        <property name="filename">target/unitTests.log</property>
+    </properties>
+    <filter type="ThresholdFilter" level="trace"/>
+
+    <appenders>
+
+        <appender type="Console" name="STDOUT">
+            <layout type="PatternLayout">
+                <pattern>%d{HH:mm:ss} [%thread:%-4r] %-5level %logger{10} - %msg%n</pattern>
+            </layout>
+        </appender>
+
+        <RollingFile name="File" fileName="${filename}" filePattern="${filename}-%d{yyyy-MM-dd}-%i.log">
+
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS EEE} %contextName:%marker %p [%thread] &lt;%r&gt; |%file#%L| %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy  interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+
+    </appenders>
+
+    <loggers>
+
+        <logger name="org.ebay" level="trace" additivity="false">
+            <appender-ref ref="File"/>
+        </logger>
+
+        <logger name="test.ebay" level="trace" additivity="false">
+            <appender-ref ref="File"/>
+        </logger>
+
+        <root level="info">
+            <appender-ref ref="STDOUT"/>
+        </root>
+    </loggers>
+
+</configuration>
