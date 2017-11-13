@@ -1,5 +1,9 @@
 # `dataMetaDom/JVM` Release history:
 
+## `1.0.3` - `2017-10-16 Mon` by [`mub`](http://github.com/mub)
+* Update:
+    * Ported `DateTimeUtil` from the Scala Utils - to be freely used by Java gens.
+
 ## `1.0.2` - `2017-09-19 Tue` by [`mub`](http://github.com/mub)
 * Update:
     * Changed the canned regex for the key `email` to support email addresses with the uppercase letters before `@`.
