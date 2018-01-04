@@ -25,6 +25,7 @@ public class TestingDm implements Verifiable {
     private Colors color;
     private Set<Long> longs;
     private List<ZonedDateTime> whens;
+    private java.net.URL photoPic;
 
     public void setId(final String newValue) {
         if(newValue == null) throw new IllegalArgumentException(
@@ -48,6 +49,10 @@ public class TestingDm implements Verifiable {
     public void setWhens(final List<ZonedDateTime> newValue) {this.whens = newValue; }
 
     public List<ZonedDateTime> getWhens() {return this.whens; }
+
+    public void setPhotoPic(final java.net.URL newValue) {this.photoPic = newValue; }
+
+    public java.net.URL getPhotoPic() {return this.photoPic; }
 
     /**
     * If there is class type mismatch, somehow we are comparing apples to oranges, this is an error, not

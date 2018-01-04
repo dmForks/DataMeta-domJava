@@ -48,13 +48,16 @@ public class DmTesting_JSONable extends Jsonable<DmTesting> {
     TestingDm_JSONable.getInstance().writeField("embedded", out, value.getEmbedded());
     if(value.getEmbs() != null) JU.writeCollectionFld("embs", out, value.getEmbs(), TestingDm_JSONable.getInstance());
     out.writeNumberField("intVal", value.getIntVal());
+    out.writeBooleanField("isCommitted", value.getIsCommitted());
     out.writeNumberField("longVal", value.getLongVal());
     if(value.getName() != null) out.writeStringField("name", value.getName());
     out.writeNumberField("salary", value.getSalary());
   }
 
   public DmTesting readInto(final JsonParser in, final DmTesting target, final boolean ignoreUnknown) throws IOException {
-    while(in.nextToken() != END_OBJECT) {
+    JsonToken t = null;
+    while ( (t = in.nextToken()) != END_OBJECT) {
+      if(t == null) throw new IllegalArgumentException("NULL token at " + in.getParsingContext());
       final String fldName = in.getCurrentName();
       if(fldName != null) {
         in.nextToken();
@@ -84,6 +87,10 @@ public class DmTesting_JSONable extends Jsonable<DmTesting> {
 
             case "intVal":
               target.setIntVal(in.getIntValue());
+              break;
+
+            case "isCommitted":
+              target.setIsCommitted(in.getBooleanValue());
               break;
 
             case "longVal":

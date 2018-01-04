@@ -36,7 +36,7 @@ public class TestingDm_DmSameFull implements DataMetaSame<TestingDm>{
             if(whens___li1__.hasNext() || whens___li2__.hasNext()) return false; // leftover elements in one
         }
 
-        return EQ.isSame(one.getId(), another.getId()) && (one.getColor() == another.getColor()) && (one.getLongs() != null && one.getLongs().equals(another.getLongs()));
+        return EQ.isSame(one.getId(), another.getId()) && (one.getColor() == another.getColor()) && (one.getLongs() != null && one.getLongs().equals(another.getLongs())) && EQ.isSame(one.getPhotoPic(), another.getPhotoPic());
     }
     public static final SemanticVersion VERSION = SemanticVersion.parse("3.2.14");
 }

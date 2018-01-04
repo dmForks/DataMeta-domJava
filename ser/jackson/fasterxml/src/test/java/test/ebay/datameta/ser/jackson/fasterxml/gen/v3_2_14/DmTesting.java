@@ -30,6 +30,7 @@ public class DmTesting implements Verifiable {
     private Colors color;
     private TestingDm embedded;
     private List<TestingDm> embs;
+    private Boolean isCommitted;
 
     public void setIntVal(final Integer newValue) {
         if(newValue == null) throw new IllegalArgumentException(
@@ -85,6 +86,13 @@ public class DmTesting implements Verifiable {
     public void setEmbs(final List<TestingDm> newValue) {this.embs = newValue; }
 
     public List<TestingDm> getEmbs() {return this.embs; }
+    public void setIsCommitted(final Boolean newValue) {
+        if(newValue == null) throw new IllegalArgumentException(
+                "NULL passed to the setter of the required field 'isCommitted' on the class test.ebay.datameta.ser.jackson.fasterxml.gen.v3_2_14.DmTesting.");
+        this.isCommitted = newValue;
+    }
+
+    public Boolean getIsCommitted() {return this.isCommitted; }
 
     /**
     * If there is class type mismatch, somehow we are comparing apples to oranges, this is an error, not
@@ -108,6 +116,7 @@ public class DmTesting implements Verifiable {
         if(created == null) missingFields.add("created");
         if(salary == null) missingFields.add("salary");
         if(embedded == null) missingFields.add("embedded");
+        if(isCommitted == null) missingFields.add("isCommitted");
         if(missingFields.length() != 0) throw new VerificationException(getClass().getSimpleName() + ": required fields not set: " + missingFields);
 
 

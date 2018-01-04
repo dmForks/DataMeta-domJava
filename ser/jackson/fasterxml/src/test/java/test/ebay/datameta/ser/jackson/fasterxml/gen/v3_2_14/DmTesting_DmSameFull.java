@@ -36,7 +36,7 @@ public class DmTesting_DmSameFull implements DataMetaSame<DmTesting>{
             if(embs___li1__.hasNext() || embs___li2__.hasNext()) return false; // leftover elements in one
         }
 
-        return EQ.isSame(one.getIntVal(), another.getIntVal()) && EQ.isSame(one.getLongVal(), another.getLongVal()) && EQ.isSame(one.getName(), another.getName()) && EQ.isSame(one.getEmail(), another.getEmail()) && EQ.isSame(one.getCreated(), another.getCreated()) && EQ.isSame(one.getSalary(), another.getSalary()) && (one.getColor() == another.getColor()) && TestingDm_DmSameFull.I.isSame(one.getEmbedded(), another.getEmbedded());
+        return EQ.isSame(one.getIntVal(), another.getIntVal()) && EQ.isSame(one.getLongVal(), another.getLongVal()) && EQ.isSame(one.getName(), another.getName()) && EQ.isSame(one.getEmail(), another.getEmail()) && EQ.isSame(one.getCreated(), another.getCreated()) && EQ.isSame(one.getSalary(), another.getSalary()) && (one.getColor() == another.getColor()) && TestingDm_DmSameFull.I.isSame(one.getEmbedded(), another.getEmbedded()) && EQ.isSame(one.getIsCommitted(), another.getIsCommitted());
     }
     public static final SemanticVersion VERSION = SemanticVersion.parse("3.2.14");
 }
