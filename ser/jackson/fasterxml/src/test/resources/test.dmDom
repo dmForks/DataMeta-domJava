@@ -14,6 +14,7 @@ record DmTesting
   -Colors color
   +TestingDm embedded
   -list{TestingDm} embs
+  +bool isCommitted
   identity intVal, longVal
 end
 
@@ -26,6 +27,7 @@ record TestingDm
   +Colors color
   -set{int[8]} longs
   -list{datetime} whens
+  -url photoPic
   identity id
 end
 

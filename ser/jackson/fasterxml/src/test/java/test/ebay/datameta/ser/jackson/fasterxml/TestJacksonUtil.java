@@ -40,10 +40,11 @@ public class TestJacksonUtil {
 
   @Test public void testJsonRoundtrip() throws Exception {
 
-    final JsonFactory jf = new JsonFactory();
+    final JsonFactory jf = JacksonUtil.getInstance().getJf();
     final TestingDm tdm1 = new TestingDm();
     tdm1.setId("first");
     tdm1.setColor(Colors.Blue);
+    tdm1.setPhotoPic(new java.net.URL("https://google.com/some/path?parama=vala&paramb=valb"));
     Set<Long> longs = new HashSet<>();
     longs.add(1111L);
     longs.add(222L);
@@ -54,12 +55,14 @@ public class TestJacksonUtil {
     zdtms1.add(ZonedDateTime.of(1995, Month.MAY.getValue(), 15, 20, 40, 35, 0, UTC));
     zdtms1.add(ZonedDateTime.now(CLOCK)); // One way to get the "now" in UTC
     tdm1.setWhens(zdtms1);
-    String json = JU.writeObject(jf, TestingDm_JSONable.getInstance(), tdm1);
+    tdm1.verify();
+    String json = JU.writeObject(TestingDm_JSONable.getInstance(), tdm1);
 /*    jg.writeStartObject();
     TestingDm_JSONable.getInstance().write(jf.createGenerator(w), tdm1);
     jg.writeEndObject(); */
     L.info("TestingDm 1:\n{}", json);
     TestingDm reTdm1 = TestingDm_JSONable.getInstance().read(jf.createParser(json), false);
+    reTdm1.verify();
     VerAndDataType vdt = VerAndDataType.fromJson(json);
     L.info("TestingDm VDT: {}", vdt);
 
@@ -80,6 +83,7 @@ public class TestJacksonUtil {
     zdtms1.add(ZonedDateTime.of(2015, Month.JULY.getValue(), 4, 18, 43, 35, 0, ZoneId.of("America/New_York")));
     zdtms1.add(ZonedDateTime.now(UTC)); // Another way to get the "now" in UTC
     tdm2.setWhens(zdtms1);
+    tdm2.verify();
 
     List<TestingDm> embs = new ArrayList<>(); embs.add(tdm1); embs.add(tdm2);
 
@@ -94,7 +98,9 @@ public class TestJacksonUtil {
     dmt.setColor(Colors.White);
     dmt.setEmbedded(tdm1);
     dmt.setEmbs(embs);
-    json = JU.writeObject(jf, DmTesting_JSONable.getInstance(), dmt);
+    dmt.setIsCommitted(true);
+    dmt.verify();
+    json = JU.writeObject(DmTesting_JSONable.getInstance(), dmt);
 
     L.info("DmTesting 1:\n{}", json);
 

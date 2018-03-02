@@ -45,11 +45,14 @@ public class TestingDm_JSONable extends Jsonable<TestingDm> {
     out.writeStringField("color", value.getColor().name());
     out.writeStringField("id", value.getId());
     if(value.getLongs() != null) JU.writeSetLong("longs", out, value.getLongs());
+    if(value.getPhotoPic() != null) out.writeStringField("photoPic", value.getPhotoPic().toExternalForm());
     if(value.getWhens() != null) JU.writeListZonedDateTime("whens", out, value.getWhens());
   }
 
   public TestingDm readInto(final JsonParser in, final TestingDm target, final boolean ignoreUnknown) throws IOException {
-    while(in.nextToken() != END_OBJECT) {
+    JsonToken t = null;
+    while ( (t = in.nextToken()) != END_OBJECT) {
+      if(t == null) throw new IllegalArgumentException("NULL token at " + in.getParsingContext());
       final String fldName = in.getCurrentName();
       if(fldName != null) {
         in.nextToken();
@@ -67,6 +70,10 @@ public class TestingDm_JSONable extends Jsonable<TestingDm> {
 
             case "longs":
               target.setLongs(JU.readSetLong(in));
+              break;
+
+            case "photoPic":
+              target.setPhotoPic(new java.net.URL(in.getText()));
               break;
 
             case "whens":
