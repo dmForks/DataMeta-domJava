@@ -40,6 +40,8 @@ public class JacksonUtil {
 
   private final static DateTimeUtil DTU = DateTimeUtil.getInstance();
 
+  private final JsonFactory jf = new JsonFactory();
+
   /**
    * The JSON key for the version of the record, namely {@link DataMetaEntity#getVersion()}.
    */
@@ -53,7 +55,9 @@ public class JacksonUtil {
 
   private JacksonUtil() {}
 
-  public <T extends DataMetaEntity> String writeObject(final JsonFactory jf, final Jsonable<T> out,
+  public JsonFactory getJf() { return jf; }
+
+  public <T extends DataMetaEntity> String writeObject(final Jsonable<T> out,
                                                        final T v) throws IOException {
     final StringWriter w = new StringWriter(8000);
     final JsonGenerator generator = jf.createGenerator(w);
@@ -65,7 +69,7 @@ public class JacksonUtil {
     return w.toString();
   }
 
-  public <T extends DataMetaEntity> T readObject(final JsonFactory jf, Jsonable<T> in, final String source) throws IOException {
+  public <T extends DataMetaEntity> T readObject(Jsonable<T> in, final String source) throws IOException {
     return in.read(jf.createParser(source));
   }
 
@@ -80,7 +84,7 @@ public class JacksonUtil {
   }
 
   public ZonedDateTime readDttm(final JsonParser in) throws IOException {
-    return DateTimeUtil.getInstance().parse(in.getText());
+    return DTU.parse(in.getText());
   }
 
   public void writeBigDecimalFld(final String fieldName, final JsonGenerator out,
@@ -97,10 +101,25 @@ public class JacksonUtil {
     out.writeEndArray();
   }
 
+  public void writeByteArrayFld(final String fieldName, final JsonGenerator out,
+                                final byte[] source) throws IOException {// FIXME -- need to test it with bytes > 0x7F
+    out.writeArrayFieldStart(fieldName);
+    for(final byte b: source) out.writeNumber(b);
+    out.writeEndArray();
+  }
+
   public Byte[] readByteArray(final JsonParser in) throws IOException {// FIXME -- need to test it with bytes > 0x7F
     final List<Byte> accumulator = new ArrayList<>(4096);
     while(in.nextToken() != END_ARRAY) accumulator.add(in.getByteValue());
     return accumulator.toArray(new Byte[accumulator.size()]);
+  }
+
+  public byte[] readByteArrayPrim(final JsonParser in) throws IOException {// FIXME -- need to test it with bytes > 0x7F
+    final List<Byte> accumulator = new ArrayList<>(4096);
+    while(in.nextToken() != END_ARRAY) accumulator.add(in.getByteValue());
+    final byte[] retVal = new byte[accumulator.size()];
+    for (int ix = 0; ix < accumulator.size(); ix++) retVal[ix] = accumulator.get(ix);
+    return retVal;
   }
 
   public void writeLongArrayFld(final String fieldName, final JsonGenerator out, final Long[] source) throws IOException {
