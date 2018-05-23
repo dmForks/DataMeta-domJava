@@ -4,7 +4,7 @@
 
     <groupId>com.github.ebaydatameta</groupId>
     <artifactId>ser-bytes</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
     <packaging>jar</packaging>
     <name>DataMeta DOM - DataMeta/Hadoop</name>
     <description>Metadata for any byte serializing goal, including Hadoop and/or various NoSQL platforms</description>

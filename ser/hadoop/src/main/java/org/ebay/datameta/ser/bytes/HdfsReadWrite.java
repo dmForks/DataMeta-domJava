@@ -22,9 +22,10 @@ public abstract class HdfsReadWrite<T> implements Writable {
         val = value;
     }
 
-    @Api private HdfsReadWrite() {
+    private HdfsReadWrite() {
         //throw new UnsupportedOperationException("Empty constructor should never be called");
     }
+    
     /**
      * Writes the {@link #getVal()} value.
      * Method overridden only to provide the JavaDocs.

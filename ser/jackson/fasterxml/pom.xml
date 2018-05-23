@@ -4,7 +4,7 @@
 
     <groupId>com.github.ebaydatameta</groupId>
     <artifactId>ser-json-fasterxml-java</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
     <name>DataMeta JSON ser/FasterXML - Java</name>
     <description>DataMeta JSON serializers with FasterXML Jackson - Java version</description>
@@ -36,6 +36,7 @@
         <log4j.version>2.9.1</log4j.version>
         <jackson.version>2.9.2</jackson.version>
     </properties>
+    
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
