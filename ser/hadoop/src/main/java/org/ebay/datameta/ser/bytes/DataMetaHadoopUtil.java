@@ -1,5 +1,6 @@
 package org.ebay.datameta.ser.bytes;
 
+import org.apache.hadoop.io.WritableUtils;
 import org.ebay.datameta.util.jdk.Api;
 import org.ebay.datameta.dom.BitSet;
 import org.ebay.datameta.dom.DataMetaEntity;
@@ -25,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.time.Instant.ofEpochMilli;
 import static java.time.ZoneOffset.UTC; // immutable, thread-safe
@@ -231,6 +233,22 @@ public class DataMetaHadoopUtil {
         }
     }
 
+    // Lists
+    public static <T extends Enum> List<T> readListEnum(final DataInput in, final Class<T> targetClass) throws IOException {
+        final int size = readVInt(in);
+        final List<T> result = new ArrayList<>(size);
+        final T[] enumVals = targetClass.getEnumConstants();
+        for(int i = 0; i < size; i++) {
+            result.add(enumVals[readVInt(in)]);
+        }
+        /*
+        could use this snippet below (DataMetaEnum would be an Enum class generated for a DataMeta model)
+        but the performance would be atrocious compared to this implementation above
+        return readSetInteger(in).stream().map(DataMetaEnum::forOrd).collect(Collectors.toList());
+        */
+        return result;
+    }
+
     public static <T extends DataMetaEntity> List<T> readList(final DataInput in, final InOutable<T> io) throws IOException {
         final int size = readVInt(in);
         final List<T> result = new ArrayList<>(size);
@@ -317,7 +335,16 @@ public class DataMetaHadoopUtil {
         }
         return result;
     }
-    
+
+    public static <T extends Enum> void writeListEnum(final DataOutput out, Set<T> vals) throws IOException {
+        if (vals != null) {
+            writeVInt(out, vals.size());
+            for (final T v : vals) {
+                writeVInt(out, v.ordinal());
+            }
+        }
+    }
+
     public static void writeListInteger(final DataOutput out, List<Integer> vals) throws IOException {
         if(vals != null) { 
             writeVInt(out, vals.size());
@@ -326,6 +353,7 @@ public class DataMetaHadoopUtil {
             }
         }
     }
+
     public static void writeListLong(final DataOutput out, List<Long> vals) throws IOException {
         if(vals != null) {
             writeVInt(out, vals.size());
@@ -375,7 +403,23 @@ public class DataMetaHadoopUtil {
             }
         }
     }
-    /// Deques
+
+    // Deques
+    public static <T extends Enum> LinkedList<T> readLinkedListEnum(final DataInput in, final Class<T> targetClass) throws IOException {
+        final int size = readVInt(in);
+        final LinkedList<T> result = new LinkedList<>();
+        final T[] enumVals = targetClass.getEnumConstants();
+        for(int i = 0; i < size; i++) {
+            result.add(enumVals[readVInt(in)]);
+        }
+        /*
+        could use this snippet below (DataMetaEnum would be an Enum class generated for a DataMeta model)
+        but the performance would be atrocious compared to this implementation above
+        return readSetInteger(in).stream().map(DataMetaEnum::forOrd).collect(Collectors.toList());
+        */
+        return result;
+    }
+
     public static LinkedList<Integer> readLinkedListInteger(final DataInput in) throws IOException {
         final int size = readVInt(in);
         final LinkedList<Integer> result = new LinkedList<>();
@@ -425,6 +469,15 @@ public class DataMetaHadoopUtil {
             result.add(readBigDecimal(in));
         }
         return result;
+    }
+
+    public static <T extends Enum> void writeLinkedListEnum(final DataOutput out, LinkedList<T> vals) throws IOException {
+        if (vals != null) {
+            writeVInt(out, vals.size());
+            for (final T v : vals) {
+                writeVInt(out, v.ordinal());
+            }
+        }
     }
 
     public static void writeLinkedListInteger(final DataOutput out, LinkedList<Integer> vals) throws IOException {
@@ -477,6 +530,17 @@ public class DataMetaHadoopUtil {
     }
     
     // Sets
+    public static <T extends Enum<T>> Set<T> readSetEnum(final DataInput io, final Class<T> targetClass) throws IOException {
+     final int size = readVInt(io);
+     final Set<T> result = new HashSet<>(size * 3 /4 +1);
+        final T[] es = targetClass.getEnumConstants();
+
+        for(int i = 0; i < size; i++) {
+            result.add(es[readVInt(io)]);
+        }
+     return result;
+   }
+
     public static Set<Integer> readSetInteger(final DataInput in) throws IOException {
         final int size = readVInt(in);
         final Set<Integer> result = new HashSet<>(size * 3 /4 +1);
@@ -493,6 +557,7 @@ public class DataMetaHadoopUtil {
         }
         return result;
     }
+
     public static Set<Float> readSetFloat(final DataInput in) throws IOException {
         final int size = readVInt(in);
         final Set<Float> result = new HashSet<>(size * 3 /4 +1);
@@ -501,6 +566,7 @@ public class DataMetaHadoopUtil {
         }
         return result;
     }
+
     public static Set<Double> readSetDouble(final DataInput in) throws IOException {
         final int size = readVInt(in);
         final Set<Double> result = new HashSet<>(size * 3 /4 +1);
@@ -536,6 +602,16 @@ public class DataMetaHadoopUtil {
         }
         return result;
     }
+
+    public static <T extends Enum> void writeSetEnum(final DataOutput out, Set<T> vals) throws IOException {
+        if (vals != null) {
+            writeVInt(out, vals.size());
+            for (final T v : vals) {
+                writeVInt(out, v.ordinal());
+            }
+        }
+    }
+
     public static void writeSetInteger(final DataOutput out, Set<Integer> vals) throws IOException {
         if(vals != null) {
             writeVInt(out, vals.size());
@@ -544,6 +620,7 @@ public class DataMetaHadoopUtil {
             }
         }
     }
+
     public static void writeSetString(final DataOutput out, Set<String> vals) throws IOException {
         if(vals != null) {
             writeVInt(out, vals.size());
@@ -552,6 +629,7 @@ public class DataMetaHadoopUtil {
             }
         }
     }
+
     public static void writeSetLong(final DataOutput out, Set<Long> vals) throws IOException {
         if(vals != null) {
             writeVInt(out, vals.size());
@@ -560,6 +638,7 @@ public class DataMetaHadoopUtil {
             }
         }
     }
+
     public static void writeSetFloat(final DataOutput out, Set<Float> vals) throws IOException {
         if(vals != null) {
             writeVInt(out, vals.size());

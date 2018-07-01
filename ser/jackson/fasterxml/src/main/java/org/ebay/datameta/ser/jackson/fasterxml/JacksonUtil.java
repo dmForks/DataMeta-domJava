@@ -109,8 +109,9 @@ public class JacksonUtil {
   }
 
   public Byte[] readByteArray(final JsonParser in) throws IOException {// FIXME -- need to test it with bytes > 0x7F
-    final List<Byte> accumulator = new ArrayList<>(4096);
+    final ArrayList<Byte> accumulator = new ArrayList<>(4096);
     while(in.nextToken() != END_ARRAY) accumulator.add(in.getByteValue());
+    accumulator.trimToSize();
     return accumulator.toArray(new Byte[accumulator.size()]);
   }
 
@@ -129,8 +130,9 @@ public class JacksonUtil {
   }
 
   public Long[] readLongArray(final JsonParser in) throws IOException {
-    final List<Long> accumulator = new ArrayList<>(4096);
+    final ArrayList<Long> accumulator = new ArrayList<>(4096);
     while(in.nextToken() != END_ARRAY) accumulator.add(in.getLongValue());
+    accumulator.trimToSize();
     return accumulator.toArray(new Long[accumulator.size()]);
   }
 
@@ -161,10 +163,11 @@ public class JacksonUtil {
       writeCollection(out, source, js);
     }
   }
-  
+
   public <T extends DataMetaEntity> List<T> readList(final JsonParser in, final Jsonable<T> js) throws IOException {
-    final List<T> accumulator = new ArrayList<>(4096);
+    final ArrayList<T> accumulator = new ArrayList<>(4096);
     while(in.nextToken() != END_ARRAY) accumulator.add(js.read(in));
+    accumulator.trimToSize();
     return accumulator;
   }
 
@@ -180,48 +183,71 @@ public class JacksonUtil {
     return accumulator;
   }
 
+    // ************* Lists:
+
+    public <T extends Enum<T>> List<T> readListEnum(final JsonParser in, final Class<T> targetClass) throws IOException {
+        final ArrayList<T> accumulator = new ArrayList<>(4096);
+        while(in.nextToken() != END_ARRAY) accumulator.add(T.valueOf(targetClass, in.getText()));
+        accumulator.trimToSize();
+        return accumulator;
+    }
+
   public <T extends DataMetaEntity> List<Integer> readListInteger(final JsonParser in) throws IOException {
-    final List<Integer> accumulator = new ArrayList<>(4096);
+    final ArrayList<Integer> accumulator = new ArrayList<>(4096);
     while(in.nextToken() != END_ARRAY) accumulator.add(in.getIntValue());
+    accumulator.trimToSize();
     return accumulator;
   }
 
   public List<Long> readListLong(final JsonParser in) throws IOException {
-    final List<Long> accumulator = new ArrayList<>(4096);
+    final ArrayList<Long> accumulator = new ArrayList<>(4096);
     while(in.nextToken() != END_ARRAY) accumulator.add(in.getLongValue());
+    accumulator.trimToSize();
     return accumulator;
   }
   
   public List<Float> readListFloat(final JsonParser in) throws IOException {
-    final List<Float> accumulator = new ArrayList<>(4096);
+    final ArrayList<Float> accumulator = new ArrayList<>(4096);
     while(in.nextToken() != END_ARRAY) accumulator.add(in.getFloatValue());
+    accumulator.trimToSize();
     return accumulator;
   }
   
   public List<Double> readListDouble(final JsonParser in) throws IOException {
-    final List<Double> accumulator = new ArrayList<>(4096);
+    final ArrayList<Double> accumulator = new ArrayList<>(4096);
     while(in.nextToken() != END_ARRAY) accumulator.add(in.getDoubleValue());
+    accumulator.trimToSize();
     return accumulator;
   }
 
   public <T extends DataMetaEntity>List<String> readListString(final JsonParser in) throws IOException {
-    final List<String> accumulator = new java.util.ArrayList<>();
+    final ArrayList<String> accumulator = new java.util.ArrayList<>();
     while(in.nextToken() != END_ARRAY) accumulator.add(in.getText());
+    accumulator.trimToSize();
     return accumulator;
   }
 
   public <T extends DataMetaEntity> List<ZonedDateTime> readListZonedDateTime(final JsonParser in) throws IOException {
-    final List<ZonedDateTime> accumulator = new java.util.ArrayList<>();
+    final ArrayList<ZonedDateTime> accumulator = new java.util.ArrayList<>();
     while (in.nextToken() != END_ARRAY) accumulator.add(readDttm(in));
+    accumulator.trimToSize();
     return accumulator;
   }
 
   public <T extends DataMetaEntity> List<BigDecimal> readListBigDecimal(final JsonParser in) throws IOException {
-    final List<BigDecimal> accumulator = new java.util.ArrayList<>();
+    final ArrayList<BigDecimal> accumulator = new java.util.ArrayList<>();
     while(in.nextToken() != END_ARRAY) accumulator.add(readBigDecimal(in));
+    accumulator.trimToSize();
     return accumulator;
   }
-  
+
+    public <T extends Enum<T>> void writeListEnum(final String fieldName, final JsonGenerator out,
+                                                        final List<T> source) throws IOException {
+        out.writeArrayFieldStart(fieldName);
+        for (final T i : source) out.writeString(i.name());
+        out.writeEndArray();
+    }
+
   public <T extends DataMetaEntity> void writeListInteger(final String fieldName, final JsonGenerator out,
                                                           final List<Integer> source) throws IOException {
     out.writeArrayFieldStart(fieldName);
@@ -272,7 +298,13 @@ public class JacksonUtil {
   }
   
   // ************* Deques:
-  
+
+    public <T extends Enum<T>> Deque<T> readLinkedListEnum(final JsonParser in, final Class<T> targetClass) throws IOException {
+        final Deque<T> accumulator = new LinkedList<>();
+        while(in.nextToken() != END_ARRAY) accumulator.add(T.valueOf(targetClass, in.getText()));
+        return accumulator;
+    }
+
   public <T extends DataMetaEntity> List<Integer> readLinkedListInteger(final JsonParser in) throws IOException {
     final List<Integer> accumulator = new java.util.LinkedList<>();
     while(in.nextToken() != END_ARRAY) accumulator.add(in.getIntValue());
@@ -314,6 +346,13 @@ public class JacksonUtil {
     while(in.nextToken() != END_ARRAY) accumulator.add(readBigDecimal(in));
     return accumulator;
   }
+
+    public <T extends Enum<T>> void writeLinkedListEnum(final String fieldName, final JsonGenerator out,
+                                                             final LinkedList<T> source) throws IOException {
+        out.writeArrayFieldStart(fieldName);
+        for (final T i : source) out.writeString(i.name());
+        out.writeEndArray();
+    }
 
   public <T extends DataMetaEntity> void writeLinkedListInteger(final String fieldName, final JsonGenerator out,
                                          final java.util.LinkedList<Integer> source) throws IOException {
@@ -366,7 +405,13 @@ public class JacksonUtil {
 
   // ************* Sets:
 
-  public <T extends DataMetaEntity> Set<Integer> readSetInteger(final JsonParser in) throws IOException {
+    public <T extends Enum<T>> Set<T> readSetEnum(final JsonParser in, final Class<T> targetClass) throws IOException {
+        final Set<T> accumulator = new java.util.HashSet<>();
+        while(in.nextToken() != END_ARRAY) accumulator.add(T.valueOf(targetClass, in.getText()));
+        return accumulator;
+    }
+
+    public <T extends DataMetaEntity> Set<Integer> readSetInteger(final JsonParser in) throws IOException {
     final Set<Integer> accumulator = new java.util.HashSet<>();
     while(in.nextToken() != END_ARRAY) accumulator.add(in.getIntValue());
     return accumulator;
@@ -407,6 +452,13 @@ public class JacksonUtil {
     while(in.nextToken() != END_ARRAY) accumulator.add(readBigDecimal(in));
     return accumulator;
   }
+
+    public <T extends Enum<T>> void writeSetEnum(final String fieldName, final JsonGenerator out,
+                                                             final Set<T> source) throws IOException {
+        out.writeArrayFieldStart(fieldName);
+        for (final T i : source) out.writeString(i.name());
+        out.writeEndArray();
+    }
 
   public <T extends DataMetaEntity> void writeSetInteger(final String fieldName, final JsonGenerator out,
                                                          final Set<Integer> source) throws IOException {

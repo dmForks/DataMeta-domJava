@@ -1,5 +1,9 @@
 # RELEASES
 
+## `1.0.4` - `2018-05-13 Sun` by [`mub`](http://github.com/mub)
+* Update:
+    * Support for Enum serialization
+    
 ## `1.0.3` - `2017-12-08 Fri` by [`mub`](http://github.com/mub)
     * Upgraded to the core version `1.0.3`
 
